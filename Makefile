@@ -13,48 +13,23 @@ PXDGEN=python3 pxdgen.py
 all: libtest.so if_math.so if_main.so if_strings.so
 
 # pure c++ files
-py_functions.o: py_functions.cpp py_functions.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-main.o: main.cpp main.h py_functions.h
+%.o: %.cpp main.h py_functions.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 libtest.so: main.o py_functions.o
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@
 
 # cython files
-main.pxd: main.h
+
+%.pxd: %.h
 	$(PXDGEN) $< -o $@
 
-py_functions.pxd: py_functions.h
-	$(PXDGEN) $< -o $@
-
-if_main.cpp if_main.h: if_main.pyx main.pxd py_functions.pxd
-	$(CYTHON) $(CYTHONFLAGS) $<
-
-if_main.o: if_main.cpp main.h py_functions.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-if_main.so: if_main.o libtest.so
+%.so: %.o libtest.so
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@ $(MODLDFLAGS)
 
-if_math.cpp: if_math.pyx main.pxd py_functions.pxd
+if_%.cpp: if_%.pyx main.pxd py_functions.pxd
 	$(CYTHON) $(CYTHONFLAGS) $<
 
-if_math.o: if_math.cpp main.h py_functions.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-if_math.so: if_math.o libtest.so
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@ $(MODLDFLAGS)
-
-if_strings.cpp: if_strings.pyx main.pxd py_functions.pxd
-	$(CYTHON) $(CYTHONFLAGS) $<
-
-if_strings.o: if_strings.cpp main.h py_functions.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-if_strings.so: if_strings.o libtest.so
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@ $(MODLDFLAGS)
 
 .PHONY: clean
 clean:
