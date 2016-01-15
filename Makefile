@@ -6,7 +6,7 @@ CXXFLAGS=-std=c++11 -Wall -Wextra -pedantic -fPIC -O1 -g -I$(PYTHONINCDIR)
 LDFLAGS=--shared
 MODLDFLAGS=
 CYTHON=cython
-CYTHONFLAGS=--gdb --cplus -3 --fast-fail
+CYTHONFLAGS=--gdb --cplus -3 --fast-fail -I .
 PXDGEN=python3 pxdgen.py
 
 .PHONY: all
